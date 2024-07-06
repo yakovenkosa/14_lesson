@@ -71,3 +71,9 @@ class Product:
             print("Цена введена некорректно.")
         else:
             self._price = new_price
+
+    @price.deleter
+    def price(self):
+        """Делитер для атрибута цены"""
+        print(f"Удаление цены для продукта '{self.name}'")
+        del self._price
