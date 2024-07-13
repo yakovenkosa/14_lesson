@@ -29,6 +29,15 @@ class Category:
             product_info.append(f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.")
         return '\n'.join(product_info)
 
+    def __len__(self):
+        """Вывод количества продуктов на складе"""
+        return sum(product.quantity for product in self.__products)
+
+    def __str__(self):
+        """Добавление строкового отображения"""
+        return f'Название категории: {self.name}, количество продуктов: {self.__len__()} шт.'
+
+
 class Product:
     """Создание класса продуктов"""
 
@@ -77,3 +86,14 @@ class Product:
         """Делитер для атрибута цены"""
         print(f"Удаление цены для продукта '{self.name}'")
         del self._price
+
+    def __str__(self):
+        """Добавление строкового отображения"""
+        return f'\nНазвание продукта: {self.name}, Цена: {self.__price} руб. Остаток: {self.quantity} шт.'
+
+    def __add__(self, other):
+        """Метод сложения объектов (сложением сумм, умноженных на количество на складе)."""
+        if self.__class__.__name__ == other.__class__.__name__:
+            return (self.price * self.quantity) + (other.price * other.quantity)
+        else:
+            raise TypeError
