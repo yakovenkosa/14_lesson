@@ -19,8 +19,12 @@ class Category:
 
     def add_product(self, product):
         """Метод для добавления продукта в список продуктов категории"""
+        Category.all_quantity_unique_product += product.quantity
+        if not isinstance(product, (Product, Smartphome, LawnGrass)):
+            raise TypeError('Продукт не соответсвует классу')
+        elif product.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.__products.append(product)
-        Category.total_unique_products += 1
 
     @property
     def products_list(self):
