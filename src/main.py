@@ -19,8 +19,12 @@ class Category:
 
     def add_product(self, product):
         """Метод для добавления продукта в список продуктов категории"""
+        Category.all_quantity_unique_product += product.quantity
+        if not isinstance(product, (Product, Smartphome, LawnGrass)):
+            raise TypeError('Продукт не соответсвует классу')
+        elif product.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.__products.append(product)
-        Category.total_unique_products += 1
 
     @property
     def products_list(self):
@@ -97,3 +101,52 @@ class Product:
             return (self.price * self.quantity) + (other.price * other.quantity)
         else:
             raise TypeError
+
+
+class Smartphome(Product):
+    """Создание класса Smartphome (базовый класс Product)"""
+
+    efficiency: float
+    model: str
+    memory: int
+    colour: int
+
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, colour):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.colour = colour
+
+    def __str__(self):
+        """Добавление строкового отображения класса SmartPhones"""
+        return f'\nПроизводительность: {self.efficiency}, модель: {self.model}.\nОбъем памяти: {self.memory} ГБ. Цвет: {self.color}'
+
+    def __add__(self, other):
+        """Функция суммирует объекты только одного класса, в случае, если объект другого класса - выводится ошибки"""
+        if isinstance(other, Smartphome):
+            return (self.price * self.quantity) + (other.price * other.quantity)
+        raise ValueError("Товары из разных классов продуктов")
+
+class LawnGrass(Product):
+    """Создание класса LawnGrass (базовый класс Product)"""
+
+    country: str
+    period: int
+    colour: int
+
+    def __init__(self, name, description, price, quantity, country, period, colour):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.period = period
+        self.colour = colour
+
+    def __str__(self):
+        """Добавление строкового отображения класса LawnGrass"""
+        return f'\nСтрана-производитель: {self.country}, срок прорастания: {self.period}, цвет: {self.colour}'
+
+    def __add__(self, other):
+        """Функция суммирует объекты только одного класса, в случае, если объект другого класса - выводится ошибки"""
+        if isinstance(other, LawnGrass):
+            return (self.price * self.quantity) + (other.price * other.quantity)
+        raise ValueError("Товары из разных классов продуктов")
