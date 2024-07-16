@@ -1,48 +1,26 @@
-class Category:
-    """Создание класса категории продуктов"""
+from abc import ABC, abstractmethod
 
-    name: str
-    description: str
-    products: list
 
-    total_categories = 0
-    total_unique_products = 0
+class AbstractProduct(ABC):
+    """Абстрактный класс c выделеным общим функционалом"""
 
-    def __init__(self, name, description, products):
-        """Метод инициализации экземпляров класса Category"""
+    @abstractmethod
+    def __init__(self):
+        pass
 
-        self.__name = name
-        self.__description = description
-        self.__products = products
-        Category.total_categories += 1
-        Category.total_unique_products += len(set([product.name for product in products]))
-
-    def add_product(self, product):
-        """Метод для добавления продукта в список продуктов категории"""
-        Category.all_quantity_unique_product += product.quantity
-        if not isinstance(product, (Product, Smartphome, LawnGrass)):
-            raise TypeError('Продукт не соответсвует классу')
-        elif product.quantity == 0:
-            raise ValueError("Товар с нулевым количеством не может быть добавлен")
-        self.__products.append(product)
-
-    @property
-    def products_list(self):
-        product_info = []
-        for product in self.__products:
-            product_info.append(f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.")
-        return '\n'.join(product_info)
-
-    def __len__(self):
-        """Вывод количества продуктов на складе"""
-        return sum(product.quantity for product in self.__products)
-
+    @abstractmethod
     def __str__(self):
-        """Добавление строкового отображения"""
-        return f'Название категории: {self.name}, количество продуктов: {self.__len__()} шт.'
+        pass
 
+class MixinLog:
+    """Миксин, который можно добавить к каждому классу для вывода информации в консоль о том, что был создан объект."""
+    def __init__(self, *args, **kwargs):
+        print(repr(self))
 
-class Product:
+    def __repr__(self):
+        return f"Создание нового экземпляра продукта - {self.__class__.__name__} ({self.__dict__.items()})"
+
+class Product(AbstractProduct, MixinLog):
     """Создание класса продуктов"""
 
     name: str
@@ -91,6 +69,10 @@ class Product:
         print(f"Удаление цены для продукта '{self.name}'")
         del self._price
 
+    def __repr__(self):
+        return f'{self.name}, {self.description}, {self.__price}, {self.quantity}'
+        super().__repr__()
+
     def __str__(self):
         """Добавление строкового отображения"""
         return f'\nНазвание продукта: {self.name}, Цена: {self.__price} руб. Остаток: {self.quantity} шт.'
@@ -109,7 +91,7 @@ class Smartphome(Product):
     efficiency: float
     model: str
     memory: int
-    colour: int
+    colour: str
 
     def __init__(self, name, description, price, quantity, efficiency, model, memory, colour):
         super().__init__(name, description, price, quantity)
@@ -120,7 +102,7 @@ class Smartphome(Product):
 
     def __str__(self):
         """Добавление строкового отображения класса SmartPhones"""
-        return f'\nПроизводительность: {self.efficiency}, модель: {self.model}.\nОбъем памяти: {self.memory} ГБ. Цвет: {self.color}'
+        return f'\nПроизводительность: {self.efficiency}, модель: {self.model}.\nОбъем памяти: {self.memory} ГБ. Цвет: {self.colour}'
 
     def __add__(self, other):
         """Функция суммирует объекты только одного класса, в случае, если объект другого класса - выводится ошибки"""
@@ -150,3 +132,28 @@ class LawnGrass(Product):
         if isinstance(other, LawnGrass):
             return (self.price * self.quantity) + (other.price * other.quantity)
         raise ValueError("Товары из разных классов продуктов")
+
+
+# работа с категориями и продуктами
+product_1 = Product('Redmi', 'smth', 40_000, 5)  # Экземпляр класса Product
+product_2 = Product('Nokia', 'smth', 50_000, 10)  # Экземпляр класса Product
+print(f'\nМетод add для 2х экземпляров класса {Product.__add__(product_1, product_2)}:')
+
+phone_1 = Smartphome('Xiaomi', 'smartphone', 45000, 3, 1500.00, 'V50',
+                          512, 'Silver')
+phone_2 = Smartphome('Motorola', 'Slider', 5000, 3, 500, 'V3',
+                          4, 'Black')
+
+print(phone_1)
+
+print(f'Общая сумма категории "Смартфон": {phone_1 + phone_2}')
+
+grass_1 = LawnGrass('Примгазон', 'Премиум', 3000, 5, 'Россия',
+                        15, 'green')
+
+grass_2 = LawnGrass('Газон дача', 'Эконом', 1500, 10, 'Россия',
+                        10, 'green')
+
+print(grass_1)
+
+print(f'Общая сумма категории "Трава газонная": {grass_1 + grass_2}')
