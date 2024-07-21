@@ -1,5 +1,6 @@
 import pytest
-from src.main import Category, Product
+from src.class_product import Product
+from src.class_category import Category
 
 
 @pytest.fixture()
